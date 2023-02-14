@@ -1,10 +1,11 @@
+import org.http4k.core.Body
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
+import org.http4k.core.body.Form
 import org.http4k.core.body.form
-import org.http4k.lens.Path
-import org.http4k.lens.uuid
+import org.http4k.lens.*
 import org.http4k.routing.bind
 import org.http4k.routing.routes
 import org.http4k.server.Undertow
@@ -40,30 +41,40 @@ data class Todo(val description: String) : ViewModel {
 fun main(args: Array<String>) {
     val renderer = HandlebarsTemplates().HotReload("src/docs")
     val todoList = TodoList(listOf(Todo("feed cat"), Todo("eat food")))
-
     val viewModel = App(todoList)
+
+    val idLens = Path.uuid().of("id")
+    val todoField = FormField.nonEmptyString().map(::Todo, Todo::description).required("description")
+    val formLens = Body.webForm(Validator.Feedback, todoField).toLens()
+    val queryLens = Query.string().defaulted("search", "")
 
     val app: HttpHandler = routes(
         "/todos" bind routes(
-            "/" bind Method.GET to { Response(OK).body(renderer(todoList.search(it.query("search") ?: ""))) },
+            "/" bind Method.GET to {
+                queryLens.run { extract(it) }
+                    .let { todoList.search(it) }
+                    .let { Response(OK).body(renderer(it)) }
+            },
             "/" bind Method.POST to {
-                val desc = it.form("description") ?: "wtf"
-                todoList.add(Todo(desc))
-                Response(OK).body(renderer(todoList))
+                formLens.run { extract(it) }
+                    .let { todoList.add(todoField(it)) }
+                    .let { Response(OK).body(renderer(todoList)) }
             },
             "/{id}/toggle" bind Method.POST to {
-                val todo = todoList.get(Path.uuid().of("id").extract(it))
-                todo.toggle()
-                Response(OK).body(renderer(todo))
+                idLens.run { extract(it) }
+                    .let { todoList.get(it) }
+                    .apply { toggle() }
+                    .let { Response(OK).body(renderer(it)) }
             },
             "/{id}" bind Method.DELETE to {
-                todoList.delete(Path.uuid().of("id").extract(it))
-                Response(OK)
+                idLens.run { extract(it) }
+                    .let { todoList.delete(it) }
+                    .let { Response(OK) }
             },
         ),
-        "/" bind Method.GET to  { Response(OK).body(renderer(viewModel)) },
+        "/" bind Method.GET to { Response(OK).body(renderer(viewModel)) },
     )
 
 
-    val server = app.asServer(Undertow(9000)).start()
+    app.asServer(Undertow(9000)).start()
 }
