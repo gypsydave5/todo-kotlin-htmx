@@ -1,0 +1,19 @@
+<html lang="">
+<head>
+    <script src="https://unpkg.com/htmx.org@1.8.5" integrity="sha384-7aHh9lqPYGYZ7sTHvzP1t3BAfLhYSTy9ArHdP3Xsr9/3TlGurYgcPBoFmXX2TX/w" crossorigin="anonymous"></script>
+</head>
+<body>
+<h1>TODO</h1>
+<section>
+    {{> "TodoList" todoList}}
+</section>
+<section>
+    <form  hx-target="#TodoList" hx-swap="outerHTML" hx-post="/todos">
+        <label>
+            Description
+            <input type="text" name="description"/>
+        </label>
+    </form>
+</section>
+</body>
+</html>
