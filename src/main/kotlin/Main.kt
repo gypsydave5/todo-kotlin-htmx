@@ -21,13 +21,9 @@ data class TodoList(var todos: List<Todo>) : ViewModel {
         this.todos = this.todos.filterNot { it.id == id }
     }
 
-    fun get(id: UUID): Todo {
-        return this.todos.find { it.id == id }!!
-    }
+    fun get(id: UUID): Todo = this.todos.find { it.id == id }!!
 
-    fun search(form: String): TodoList {
-        return TodoList(this.todos.filter { it.description.contains(form) })
-    }
+    fun search(query: String): TodoList = TodoList(this.todos.filter { it.description.contains(query) })
 }
 
 data class Todo(val description: String) : ViewModel {
