@@ -24,6 +24,10 @@ data class TodoList(var todos: List<Todo>) : ViewModel {
     fun get(id: UUID): Todo {
         return this.todos.find { it.id == id }!!
     }
+
+    fun search(form: String): TodoList {
+        return TodoList(this.todos.filter { it.description.contains(form) })
+    }
 }
 
 data class Todo(val description: String) : ViewModel {
@@ -56,6 +60,7 @@ fun main(args: Array<String>) {
             todoList.add(Todo(desc))
             Response(OK).body(renderer(todoList))
         },
+        "/todos" bind Method.GET to { Response(OK).body(renderer(todoList.search(it.query("search")!!))) },
         "/" bind Method.GET to  { Response(OK).body(renderer(viewModel)) },
     )
 
