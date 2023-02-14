@@ -6,22 +6,23 @@
 </head>
 <body>
 <h1>TODO</h1>
-<input type="search"
-       name="search" placeholder="Begin Typing To Search..."
-       hx-get="/todos"
-       hx-trigger="keyup changed delay:500ms, search"
-       hx-target="#TodoList"
-       hx-swap="outerHTML">
-<section>
-    {{> "TodoList" todoList}}
-</section>
-<section>
-    <form hx-target="#TodoList" hx-swap="outerHTML" hx-post="/todos">
-        <label>
-            Description
-            <input type="text" name="description" />
-        </label>
-    </form>
-</section>
+<div hx-target="#TodoList", hx-swap="outerHTML">
+    <input type="search"
+           name="search" placeholder="Begin Typing To Search..."
+           hx-get="/todos"
+           hx-trigger="keyup changed delay:500ms, search"
+           >
+    <section>
+        {{> "TodoList" todoList}}
+    </section>
+    <section>
+        <form hx-post="/todos">
+            <label>
+                Description
+                <input type="text" name="description"/>
+            </label>
+        </form>
+    </section>
+</div>
 </body>
 </html>
