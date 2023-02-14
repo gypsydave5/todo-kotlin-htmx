@@ -1,14 +1,17 @@
-import org.http4k.core.*
+import org.http4k.core.HttpHandler
+import org.http4k.core.Method
+import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
 import org.http4k.core.body.form
+import org.http4k.lens.Path
+import org.http4k.lens.uuid
 import org.http4k.routing.bind
-import org.http4k.routing.path
 import org.http4k.routing.routes
 import org.http4k.server.Undertow
 import org.http4k.server.asServer
 import org.http4k.template.HandlebarsTemplates
 import org.http4k.template.ViewModel
-import java.util.UUID
+import java.util.*
 
 data class App(var todoList: TodoList) : ViewModel
 
@@ -49,13 +52,12 @@ fun main(args: Array<String>) {
                 Response(OK).body(renderer(todoList))
             },
             "/{id}/toggle" bind Method.POST to {
-                val id = it.path("id")?.let { UUID.fromString(it) }!!
-                val todo = todoList.get(id)
+                val todo = todoList.get(Path.uuid().of("id").extract(it))
                 todo.toggle()
                 Response(OK).body(renderer(todo))
             },
             "/{id}" bind Method.DELETE to {
-                todoList.delete(it.path("id")?.let { UUID.fromString(it) }!!)
+                todoList.delete(Path.uuid().of("id").extract(it))
                 Response(OK)
             },
         ),
