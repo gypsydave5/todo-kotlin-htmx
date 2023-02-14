@@ -1,0 +1,10 @@
+<li hx-target="closest li" hx-swap="outerHTML">
+    <span hx-post="/todos/{{id}}/toggle">
+    {{#if done}}
+    <s>{{description}}</s>
+    {{else}}
+   {{description}}
+    {{/if}}
+    </span>
+    <button hx-delete="todos/{{id}}" >DELETE</button>
+</li>
