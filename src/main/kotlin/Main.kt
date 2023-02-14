@@ -56,11 +56,11 @@ fun main(args: Array<String>) {
             Response(OK)
         },
         "/todos" bind Method.POST to {
-            val desc = it.form("description")!!
+            val desc = it.form("description") ?: "wtf"
             todoList.add(Todo(desc))
             Response(OK).body(renderer(todoList))
         },
-        "/todos" bind Method.GET to { Response(OK).body(renderer(todoList.search(it.query("search")!!))) },
+        "/todos" bind Method.GET to { Response(OK).body(renderer(todoList.search(it.query("search") ?: ""))) },
         "/" bind Method.GET to  { Response(OK).body(renderer(viewModel)) },
     )
 
