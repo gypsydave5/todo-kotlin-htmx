@@ -16,7 +16,8 @@ dependencies {
     implementation("org.http4k:http4k-server-undertow")
     implementation("org.http4k:http4k-client-apache")
     implementation("org.http4k:http4k-template-handlebars")
-
+    implementation("org.junit.jupiter:junit-jupiter-api:5.8.0")
+    testImplementation("io.strikt:strikt-core:0.34.1")
     testImplementation(kotlin("test"))
 }
 
