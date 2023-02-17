@@ -31,10 +31,13 @@ fun todoRouter(
                 .let(renderer::renderToResponse)
         },
         "/{id}/toggle" bind Method.POST to {
-            idLens(it)
-                .let(todoList::get)
-                .toggle()
-                .let(renderer::renderToResponse)
+            val todo = idLens(it).let(todoList::get)
+
+            if (todo == null) {
+                Response(Status.NOT_FOUND)
+            } else {
+                renderer.renderToResponse(todo)
+            }
         },
         "/{id}" bind Method.DELETE to {
             val id = idLens(it)
