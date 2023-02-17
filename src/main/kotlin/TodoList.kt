@@ -1,7 +1,7 @@
 import org.http4k.template.ViewModel
 import java.util.*
 
-data class TodoList(var todos: List<Todo> = listOf()) : ViewModel {
+data class TodoList(private var todos: List<Todo> = listOf()) : ViewModel, Collection<Todo> by todos {
     fun add(todo: Todo): TodoList {
         this.todos = this.todos + todo
         return this

@@ -16,10 +16,9 @@ fun main(args: Array<String>) {
     val todoList = TodoList(listOf(Todo("feed cat"), Todo("eat food")))
     val todoApp = App(todoList)
 
-
-
     val server: HttpHandler = routes(
         "/todos" bind todoRouter(todoList, renderer),
+
         "/" bind Method.GET to { Response(OK).body(renderer(todoApp)) },
     )
 
