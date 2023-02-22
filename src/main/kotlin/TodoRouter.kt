@@ -1,12 +1,10 @@
-import org.http4k.core.Body
-import org.http4k.core.Method
-import org.http4k.core.Response
-import org.http4k.core.Status
+import org.http4k.core.*
 import org.http4k.lens.*
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.routes
 import org.http4k.template.TemplateRenderer
+import org.http4k.template.ViewModel
 import org.http4k.template.renderToResponse
 
 fun todoRouter(
@@ -34,8 +32,7 @@ fun todoRouter(
             idLens(it)
                 .let(todoList::get)
                 ?.toggle()
-                ?.let(renderer::renderToResponse)
-                ?: Response(Status.NOT_FOUND)
+                .let(renderer::renderOrNotFound)
         },
         "/{id}" bind Method.DELETE to {
             idLens(it).let(todoList::delete)
@@ -43,3 +40,11 @@ fun todoRouter(
         },
     )
 }
+
+fun TemplateRenderer.renderOrNotFound(
+    viewModel: ViewModel?,
+    status: Status = Status.OK,
+    contentType: ContentType = ContentType.TEXT_HTML,
+    ifNullStatus: Status = Status.NOT_FOUND
+): Response = viewModel?.let { this.renderToResponse(it, status, contentType) }
+    ?: Response(ifNullStatus)
