@@ -15,7 +15,7 @@ data class TodoList(private var todos: Collection<Todo> = listOf()) : ViewModel,
 
     fun get(id: UUID): Todo? = this.todos.find { it.id == id }
 
-    fun search(query: String): TodoList = TodoList(this.todos.filter { it.description.contains(query) }.toMutableList())
+    fun search(query: String): TodoList = TodoList(this.todos.filter { it.description.contains(query) })
 
     override val size: Int get() = this.todos.size
 

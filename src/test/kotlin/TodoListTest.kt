@@ -80,4 +80,24 @@ class TodoListTest {
             doesNotContain(todo1)
         }
     }
+
+    @Test
+    fun `can search for Todos`() {
+        val todoList = TodoList()
+
+        val todo1 = Todo("party hard")
+        val todo2 = Todo("party on")
+        val todo3 = Todo("parteee")
+
+        todoList.add(todo1)
+        todoList.add(todo2)
+        todoList.add(todo3)
+
+        expectThat(todoList.search("hard")) {
+            hasSize(1)
+            contains(todo1)
+            doesNotContain(todo2)
+            doesNotContain(todo3)
+        }
+    }
 }
