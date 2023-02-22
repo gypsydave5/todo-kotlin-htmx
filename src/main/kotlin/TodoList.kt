@@ -3,17 +3,25 @@ import java.util.*
 
 interface TodoListStore {
     fun get(): List<Todo>
-    fun set(todoList: List<Todo>)
+    fun add(Todo: Todo)
+    fun delete(id: UUID)
+    fun toggle(id: UUID)
 }
 
-class InMemoryTodoListStore : TodoListStore {
-    private var todoList = listOf<Todo>()
+class InMemoryTodoListStore(initialList: List<Todo> = emptyList()) : TodoListStore {
+    private var todoList = initialList
 
     override fun get(): List<Todo> = todoList
+    override fun add(todo: Todo) {
+        todoList+=todo
+    }
 
-    override fun set(todoList: List<Todo>) {
-        println("setting todo list to $todoList")
-        this.todoList = todoList
+    override fun delete(id: UUID) {
+        todoList = todoList.delete(id)
+    }
+
+    override fun toggle(id: UUID) {
+        todoList = todoList.toggle(id)
     }
 }
 fun List<Todo>.delete(id: UUID): List<Todo> = this.filter { it.id == id }

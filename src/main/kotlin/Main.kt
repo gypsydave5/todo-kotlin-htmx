@@ -15,8 +15,7 @@ fun main(args: Array<String>) {
     val renderer = HandlebarsTemplates().HotReload("src/docs")
     val view = Body.viewModel(renderer, TEXT_HTML).toLens()
 
-    val todoListStore = InMemoryTodoListStore()
-    todoListStore.set(listOf(Todo("feed cat"), Todo("eat food")))
+    val todoListStore = InMemoryTodoListStore(listOf(Todo("feed cat"), Todo("eat food")))
 
     val todoApp = App(todoListStore)
 
