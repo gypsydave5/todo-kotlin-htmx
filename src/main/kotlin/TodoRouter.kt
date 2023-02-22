@@ -33,13 +33,12 @@ fun todoRouter(
             formLens(it)
                 .let(todoField)
                 .also(todoListStore::add)
-            println("todoListStore.get() = ${todoListStore.get()}")
             renderer.renderToResponse(TodoList(todoListStore.get()))
         },
         "/{id}/toggle" bind Method.POST to {
-            idLens(it)
-                .let(todoListStore::toggle)
-            Response(Status.SEE_OTHER).header("Location", "/todos")
+            val id = idLens(it)
+            todoListStore.toggle(id)
+            renderer.renderToResponse(todoListStore.get().get(id)!!)
         },
         "/{id}" bind Method.DELETE to {
             val id = idLens(it)
