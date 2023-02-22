@@ -23,26 +23,25 @@ fun todoRouter(
 
     return routes(
         "/" bind Method.GET to {
-            val queryLens1: String = queryLens(it)
-            queryLens1
-                .let{query -> todoListStore.get().search(query)}
-                .let{ todos -> TodoList(todos)}
+            queryLens(it)
+                .let { query -> todoListStore.get().search(query) }
+                .let { todos -> TodoList(todos) }
                 .let(renderer::renderToResponse)
         },
+        "{id}" bind Method.GET to { renderer.renderToResponse(todoListStore.get().get(idLens(it))!!) },
         "/" bind Method.POST to {
             formLens(it)
                 .let(todoField)
                 .also(todoListStore::add)
-            renderer.renderToResponse(TodoList(todoListStore.get()))
+            Response(Status.SEE_OTHER).header("Location", "/todos")
         },
         "/{id}/toggle" bind Method.POST to {
             val id = idLens(it)
             todoListStore.toggle(id)
-            renderer.renderToResponse(todoListStore.get().get(id)!!)
+            Response(Status.SEE_OTHER).header("Location", "/todos/$id")
         },
         "/{id}" bind Method.DELETE to {
-            val id = idLens(it)
-            todoListStore.delete(id)
+            todoListStore.delete(idLens(it))
             Response(Status.OK)
         },
     )
