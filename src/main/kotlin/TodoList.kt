@@ -1,37 +1,29 @@
 import org.http4k.template.ViewModel
 import java.util.*
 
-data class TodoList(private var todos: Collection<Todo> = listOf()) : ViewModel, Collection<Todo> {
+interface TodoListStore {
+    fun get(): List<Todo>
+    fun set(todoList: List<Todo>)
+}
 
-    fun add(todo: Todo): TodoList {
-        this.todos = this.todos + todo
-        return this
-    }
+class InMemoryTodoListStore : TodoListStore {
+    private var todoList = listOf<Todo>()
 
-    fun delete(id: UUID): TodoList {
-        this.todos = this.todos.filter { it.id == id }
-        return this
-    }
+    override fun get(): List<Todo> = todoList
 
-    fun get(id: UUID): Todo? = this.todos.find { it.id == id }
-
-    fun search(query: String): TodoList = TodoList(this.todos.filter { it.description.contains(query) }.toMutableList())
-
-    override val size: Int get() = this.todos.size
-
-    override fun isEmpty(): Boolean {
-        return this.todos.isEmpty()
-    }
-
-    override fun iterator(): Iterator<Todo> {
-        return this.todos.iterator()
-    }
-
-    override fun containsAll(elements: Collection<Todo>): Boolean {
-        return this.todos.containsAll(elements)
-    }
-
-    override fun contains(element: Todo): Boolean {
-        return this.contains(element)
+    override fun set(todoList: List<Todo>) {
+        println("setting todo list to $todoList")
+        this.todoList = todoList
     }
 }
+fun List<Todo>.delete(id: UUID): List<Todo> = this.filter { it.id == id }
+fun List<Todo>.get(id: UUID): Todo? = this.find { it.id == id }
+fun List<Todo>.search(query: String): List<Todo> = this.filter { it.description.contains(query) }
+
+fun List<Todo>.toggle(ID: UUID): List<Todo> {
+    val todo = this.get(ID)
+    todo?.toggle()
+    return this
+}
+
+data class TodoList(val todos: List<Todo>) : ViewModel

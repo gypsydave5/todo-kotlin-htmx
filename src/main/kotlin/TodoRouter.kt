@@ -10,7 +10,7 @@ import org.http4k.template.TemplateRenderer
 import org.http4k.template.renderToResponse
 
 fun todoRouter(
-    todoList: TodoList,
+    todoListStore: TodoListStore,
     renderer: TemplateRenderer
 ): RoutingHttpHandler {
     val idLens = Path.uuid().of("id")
@@ -18,41 +18,33 @@ fun todoRouter(
     val formLens = Body.webForm(Validator.Feedback, todoField).toLens()
     val queryLens = Query.string().defaulted("search", "")
 
+    println("only expecting to see this once, when the server starts up")
+
+
     return routes(
         "/" bind Method.GET to {
-            queryLens(it)
-                .let(todoList::search)
+            val queryLens1: String = queryLens(it)
+            queryLens1
+                .let{query -> todoListStore.get().search(query)}
+                .let{ todos -> TodoList(todos)}
                 .let(renderer::renderToResponse)
         },
         "/" bind Method.POST to {
             formLens(it)
                 .let(todoField)
-                .let(todoList::add)
-                .let(renderer::renderToResponse)
+                .also{ todo -> todoListStore.set(todoListStore.get() + todo)}
+            println("todoListStore.get() = ${todoListStore.get()}")
+            renderer.renderToResponse(TodoList(todoListStore.get()))
         },
         "/{id}/toggle" bind Method.POST to {
             idLens(it)
-                .let(todoList::get)
-                ?.toggle()
-                ?.let(renderer::renderToResponse)
-                ?: Response(Status.NOT_FOUND)
-
+                .let{id -> todoListStore.set(todoListStore.get().toggle(id))}
+            Response(Status.SEE_OTHER).header("Location", "/todos")
         },
         "/{id}" bind Method.DELETE to {
             val id = idLens(it)
-            todoList.delete(id)
+            todoListStore.set(todoListStore.get().delete(id))
             Response(Status.OK)
-
-            // vs.
-
-            idLens(it)
-                .let(todoList::delete)
-                .let { Response(Status.OK) }
-
-            // vs.
-            idLens(it).let(todoList::delete)
-            Response(Status.OK)
-
         },
     )
 }
