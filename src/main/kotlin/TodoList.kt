@@ -9,7 +9,7 @@ data class TodoList(private var todos: Collection<Todo> = listOf()) : ViewModel,
     }
 
     fun delete(id: UUID): TodoList {
-        this.todos = this.todos.filter { it.id == id }
+        this.todos = this.todos.filter { it.id != id }
         return this
     }
 
@@ -32,6 +32,6 @@ data class TodoList(private var todos: Collection<Todo> = listOf()) : ViewModel,
     }
 
     override fun contains(element: Todo): Boolean {
-        return this.contains(element)
+        return this.todos.contains(element)
     }
 }

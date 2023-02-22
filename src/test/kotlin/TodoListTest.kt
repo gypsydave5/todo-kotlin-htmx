@@ -1,9 +1,6 @@
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
-import strikt.assertions.hasSize
-import strikt.assertions.isContainedIn
-import strikt.assertions.isEqualTo
-import strikt.assertions.isNull
+import strikt.assertions.*
 import java.util.*
 
 
@@ -53,10 +50,34 @@ class TodoListTest {
         todoList.add(todo2)
         todoList.add(todo3)
 
-        expectThat(todoList).hasSize(3)
+        expectThat(todoList) {
+            hasSize(3)
+            contains(todo1)
+            contains(todo2)
+            contains(todo3)
+        }
+    }
 
-        for (todo in todoList) {
-            expectThat(todo).isContainedIn(listOf(todo1, todo2, todo3))
+
+    @Test
+    fun `can delete todos`() {
+        val todoList = TodoList()
+
+        val todo1 = Todo("party hard")
+        val todo2 = Todo("party on")
+        val todo3 = Todo("parteee")
+
+        todoList.add(todo1)
+        todoList.add(todo2)
+        todoList.add(todo3)
+
+        todoList.delete(todo1.id)
+
+        expectThat(todoList) {
+            hasSize(2)
+            contains(todo2)
+            contains(todo3)
+            doesNotContain(todo1)
         }
     }
 }
