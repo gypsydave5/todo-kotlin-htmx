@@ -1,6 +1,7 @@
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.hasSize
+import strikt.assertions.isContainedIn
 import strikt.assertions.isEqualTo
 import strikt.assertions.isNull
 import java.util.*
@@ -15,7 +16,7 @@ class TodoListTest {
         val todo = Todo("Buy milk")
 
         todoList.add(todo)
-        
+
         expectThat(todoList.size).isEqualTo(1)
         expectThat(todoList.first()).isEqualTo(todo)
     }
@@ -38,5 +39,24 @@ class TodoListTest {
         val id = UUID.randomUUID()
         val todo = todoList.get(id)
         expectThat(todo).isNull()
+    }
+
+    @Test
+    fun `iterate through all the todos`() {
+        val todoList = TodoList()
+
+        val todo1 = Todo("party hard")
+        val todo2 = Todo("party on")
+        val todo3 = Todo("parteee")
+
+        todoList.add(todo1)
+        todoList.add(todo2)
+        todoList.add(todo3)
+
+        expectThat(todoList).hasSize(3)
+
+        for (todo in todoList) {
+            expectThat(todo).isContainedIn(listOf(todo1, todo2, todo3))
+        }
     }
 }

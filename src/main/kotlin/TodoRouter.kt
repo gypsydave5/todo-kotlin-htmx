@@ -36,23 +36,10 @@ fun todoRouter(
                 ?.toggle()
                 ?.let(renderer::renderToResponse)
                 ?: Response(Status.NOT_FOUND)
-
         },
         "/{id}" bind Method.DELETE to {
-            val id = idLens(it)
-            todoList.delete(id)
-            Response(Status.OK)
-
-            // vs.
-
-            idLens(it)
-                .let(todoList::delete)
-                .let { Response(Status.OK) }
-
-            // vs.
             idLens(it).let(todoList::delete)
             Response(Status.OK)
-
         },
     )
 }
