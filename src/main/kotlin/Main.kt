@@ -8,7 +8,8 @@ import org.http4k.server.asServer
 import org.http4k.template.*
 
 data class App(private val store: TodoListStore) : ViewModel {
-    val todos: List<Todo> = store.get()
+    val todos: List<Todo>
+        get() = store.get()
 }
 
 fun main(args: Array<String>) {
